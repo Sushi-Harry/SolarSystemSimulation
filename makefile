@@ -1,45 +1,38 @@
-
+# Compiler and flags
 CC = gcc
+# CFLAGS are for compilation. -g adds debug symbols for GDB. -I./include tells the compiler to look for headers in the 'include' folder.
+CFLAGS = -g -I./include -Wall
+# LDFLAGS are for linking.
+LDFLAGS = -lglfw -lGLEW -lGL -lm
 
-CFLAGS = -Wall -Wextra -Iinclude -g
+# List ALL your SOURCE (.c) files here.
+# IMPORTANT: Use the correct paths to your .c files.
+SRC = src/main.c \
+      src/Engine.c \
+      src/Camera.c \
+      src/Shader.c \
+      src/ModelLoader.c \
+      src/TextureLoader.c \
+      src/Skybox.c
 
-LDLIBS = -lglfw -lGLEW -lGL -lm -ldl -lpthread
+# Automatically generate object (.o) file names from source files
+OBJ = $(SRC:.c=.o)
 
-SRC_DIR = include
-OBJ_DIR = obj
-BIN_DIR = bin
+# The name of your final executable
+TARGET = bin/main
 
-TARGET = $(BIN_DIR)/main
-
-SRCS_ROOT = $(wildcard *.c)
-SRCS_MOD = $(wildcard $(SRC_DIR)/*.c)
-
-OBJS_ROOT = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS_ROOT))
-OBJS_MOD = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS_MOD))
-
-OBJS = $(OBJS_ROOT) $(OBJS_MOD)
-
+# The default rule: build the target executable
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	@mkdir -p $(BIN_DIR)
-	# The link step. Note we use CC, CFLAGS, $^ (all prerequisites), $@ (the target), and LDLIBS
-	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
+# Rule to link the final executable from all the object files
+$(TARGET): $(OBJ)
+	@mkdir -p bin
+	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-$(OBJ_DIR)/%.o: %.c
-	@mkdir -p $(OBJ_DIR)
-	# -c means "compile only, don't link"
-	# $< is the first prerequisite (the .c file)
+# Rule to compile any .c file into a .o file
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
+# Rule to clean up all compiled files
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
-
-run: all
-	./$(TARGET)
-
-.PHONY: all clean run
+	rm -f $(OBJ) $(TARGET)

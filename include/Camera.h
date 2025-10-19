@@ -1,15 +1,14 @@
 #pragma once
-
 #include <GL/glew.h>
 #include <stdbool.h>
 #include <cglm/cglm.h>
 
-enum CAMERA_MOVEMENT {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT
-};
+typedef enum CAMERA_MOVEMENT {
+    CAMERA_MOVEMENT_FORWARD,
+    CAMERA_MOVEMENT_BACKWARD,
+    CAMERA_MOVEMENT_LEFT,
+    CAMERA_MOVEMENT_RIGHT
+} CAMERA_MOVEMENT;
 
 typedef struct Camera{
     /* Camera Attributes */
@@ -29,9 +28,9 @@ typedef struct Camera{
     
 } Camera;
 
-void KEYBOARD_PROCESSING(Camera* cam, CAMERA_MOVEMENT direction, float deltaTime);
 void UPDATE_VECTORS(Camera* cam);
 void CAMERA_INIT(Camera* cam, vec3 position, vec3 up, float move_speed, float sensitivity);
 void VIEW_MATRIX(Camera* cam, mat4* destViewMat);
 vec3* VIEW_POS(Camera* cam);
+void KEYBOARD_PROCESSING(Camera* cam, CAMERA_MOVEMENT direction, float deltaTime);
 void PROCESS_MOUSE_MOVEMENT(Camera* cam, float xoffset, float yoffset, bool constrainPitch);
