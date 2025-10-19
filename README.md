@@ -1,5 +1,5 @@
 # A 3D SOLAR SYSTEM SIMULATION
-This is a very simple Solar System Simulation written from scratch in C using OpenGL
+This is a very simple **WIP** Solar System Simulation written from scratch in C using OpenGL
 
 ## Dependencies
 - **glfw**
