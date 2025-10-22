@@ -10,6 +10,7 @@
 
 #include <cglm/cglm.h>
 #include "Camera.h"
+#include "SolarSystem.h"
 
 // A struct to define the basic Engine object type
 typedef struct Engine
@@ -22,8 +23,11 @@ typedef struct Engine
     double deltaTime;
     double lastFrameTime;
 
-    // Test Model
-    Model Sphere;
+    // SOlar system
+    SolarSystem solar_system;
+
+    // TEsting
+    Model sphere_model;
 
     // Skybox
     Skybox spaceSkybox;

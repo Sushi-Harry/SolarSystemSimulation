@@ -1,8 +1,9 @@
 #include <GL/glew.h>
-#include "Shader.h"
+#include "../include/Shader.h"
 
 /*------------------FUNCTION DEFINITIONS------------------*/
 void SHADER(Shader* SHADER, const char* vsName, const char* fsName){
+    printf("DEBUG (Shader.c):      sizeof(Shader) = %zu\n", sizeof(Shader));
     //These varibles will hold the path to the VS and FS
     const char* DEFAULT_DIR = "shaders/";
     char PATH_VS[512];
@@ -38,6 +39,9 @@ void SHADER(Shader* SHADER, const char* vsName, const char* fsName){
     if(!success){
         glGetShaderInfoLog(vertex, 512, NULL, infoLog);
         printf("ERROR::SHADER.H::VERTEX::COMPILATION_FAILED::%s::%s\n", vsName, infoLog);
+        glDeleteShader(vertex);
+        free(CODE_FS);
+        free(CODE_VS);
     }
 
     //Fragment shader
@@ -48,6 +52,10 @@ void SHADER(Shader* SHADER, const char* vsName, const char* fsName){
     if(!success){
         glGetShaderInfoLog(fragment, 512, NULL, infoLog);
         printf("ERROR::SHADER.H::FRAGMENT::COMPILATION_FAILED::%s::%s\n", fsName, infoLog);
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        free(CODE_FS);
+        free(CODE_VS);
     }
     SHADER->SHADER_ID = glCreateProgram();
     glAttachShader(SHADER->SHADER_ID, vertex);
@@ -58,6 +66,11 @@ void SHADER(Shader* SHADER, const char* vsName, const char* fsName){
     if(!success){
         glGetProgramInfoLog(SHADER->SHADER_ID, 512, NULL, infoLog);
         printf("ERROR::SHADER.H::PROGRAM::LINKING_FAILED::%s", infoLog);
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        free(CODE_FS);
+        free(CODE_VS);
+        return;
     }
 
     glDeleteShader(vertex);
@@ -67,6 +80,7 @@ void SHADER(Shader* SHADER, const char* vsName, const char* fsName){
 }
 void USE_SHADER(Shader* SHADER){
     glUseProgram(SHADER->SHADER_ID);
+    
 }
 void FREE_SHADER(Shader* shader) {
     if (shader) {

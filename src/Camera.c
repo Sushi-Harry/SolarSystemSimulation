@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "../include/Camera.h"
 
 // Default camera values
 const float DEFAULT_YAW         = -90.0;
@@ -52,7 +52,7 @@ vec3* VIEW_POS(Camera* cam){
 }
 void KEYBOARD_PROCESSING(Camera* cam, CAMERA_MOVEMENT direction, float deltaTime){
     float velocity = cam->MOVE_SPEED * deltaTime;
-    printf("LOG::CAMERA.H::KEYBOARD_PROCESSING()::VELOCITY_%f::DELTA_TIME_%f\n", velocity, deltaTime);
+    // printf("LOG::CAMERA.H::KEYBOARD_PROCESSING()::VELOCITY_%f::DELTA_TIME_%f\n", velocity, deltaTime);
     if(direction == CAMERA_MOVEMENT_FORWARD){
         glm_vec3_muladds(cam->FRONT, velocity, cam->POSITION);
     }

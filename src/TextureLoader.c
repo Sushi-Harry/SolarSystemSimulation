@@ -1,4 +1,4 @@
-#include "TextureLoader.h"
+#include "../include/TextureLoader.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,11 +24,44 @@ void TEXTURE(Texture* TEXTURE, char *directory, char* name){
         printf("ERROR::TEXTURE_LOADER::FAILED_TO_ALLOCATE_MEMORY_FOR_PATH\n");
         return; // Exit the function; we can't continue
     }
-
-    // Build the path string safely
     strcpy(TEXTURE->PATH, directory);
     strcat(TEXTURE->PATH, name);
 
+    /*----------------------SETTING UP THE TEXTURE-----------------------------*/
+    glGenTextures(1, &(TEXTURE->TEXTURE_OBJECT));
+    glBindTexture(GL_TEXTURE_2D, TEXTURE->TEXTURE_OBJECT);
+
+    // Texture wrapping and filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Loading and generating the texture data
+    // Use the TEXTURE->PATH we just built
+    stbi_set_flip_vertically_on_load(1);
+    unsigned char* data = stbi_load(TEXTURE->PATH, &(TEXTURE->WIDTH), &(TEXTURE->HEIGHT), &(TEXTURE->NR_CHANNELS), 0);
+    
+    if(data){
+        GLenum format = GL_RGB;
+        if (TEXTURE->NR_CHANNELS == 1)
+            format = GL_RED;
+        else if (TEXTURE->NR_CHANNELS == 3)
+            format = GL_RGB;
+        else if (TEXTURE->NR_CHANNELS == 4)
+            format = GL_RGBA;
+            
+        glTexImage2D(GL_TEXTURE_2D, 0, format, TEXTURE->WIDTH, TEXTURE->HEIGHT, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        printf("ERROR::TEXTURE_LOADER::FAILED_TO_LOAD_TEXTURE: %s\n", TEXTURE->PATH);
+    }
+    
+    stbi_image_free(data);
+}
+
+void TEXTURE_PREDEFINED_PATH(Texture* TEXTURE, const char* TEXTURE_PATH){
+    TEXTURE->PATH = TEXTURE_PATH;
     /*----------------------SETTING UP THE TEXTURE-----------------------------*/
     glGenTextures(1, &(TEXTURE->TEXTURE_OBJECT));
     glBindTexture(GL_TEXTURE_2D, TEXTURE->TEXTURE_OBJECT);

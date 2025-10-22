@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "../include/Engine.h"
 
 // --- PRIVATE STATE VARIABLES ---
 // These are only visible inside this file.
@@ -61,9 +61,9 @@ bool ENGINE_INIT(Engine* ENGINE, int WIDTH, int HEIGHT){
     ENGINE->lastFrameTime = 0.0;
     
     /*--------------------------------------------------TESTING---------------------------------------------*/
-    MODEL(&(ENGINE->Sphere), "models/Sphere/MetalRoughSpheres.gltf", "celestialBody.vs", "celestialBody.fs", "models/Sphere/Spheres_BaseColor.png", "models/Sphere/Spheres_MetalRough.png");
-    
-    vec3 cam_pos = {0.0, 0.0, 3.0};
+    SOLAR_SYSTEM_INIT(&(ENGINE->solar_system));
+    // MODEL(&(ENGINE->sphere_model), "models/sphere/sphere.gltf", "celestialBody.vs", "celestialBody.fs", "models/sun/sun_base_color.png", "models/sun/sun_specular.png");
+    vec3 cam_pos = {0.0, 0.0, 100.0};
     vec3 cam_up = {0.0, 1.0, 0.0};
     CAMERA_INIT(&(ENGINE->CAMERA), cam_pos, cam_up, 10.0, 0.1);
     glfwSetInputMode(ENGINE->WINDOW, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -80,6 +80,9 @@ void ENGINE_RUN(Engine* ENGINE){
         double currentFrame = glfwGetTime();
         ENGINE->deltaTime = currentFrame - ENGINE->lastFrameTime;
         ENGINE->lastFrameTime = currentFrame;
+        
+        /*-----------------INITIALIZING THE SYSTEM----------------------*/
+        UPDATE_SOLAR_SYSTEM(&(ENGINE->solar_system));
 
         /*----------INPUT------------*/
         processInput(ENGINE);
@@ -91,8 +94,8 @@ void ENGINE_RUN(Engine* ENGINE){
         /*----------UPDATE------------*/
         // Draw skybox first
         RENDER_SKYBOX(&(ENGINE->spaceSkybox), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
-        // update(ENGINE);
-        RENDER_MODEL(&(ENGINE->Sphere), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
+        RENDER_SOLAR_SYSTEM(&(ENGINE->solar_system), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
+        // RENDER_MODEL(&(ENGINE->sphere_model), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
         /*---------This is the end of the current frame--------------*/
         glfwSwapBuffers(ENGINE->WINDOW);
         glfwPollEvents();
@@ -104,10 +107,10 @@ void ENGINE_CLEANUP(Engine* ENGINE){
     if(&(ENGINE->spaceSkybox)){
         printf("LOG::ENGINE.H::CLEANUP::SKYBOX_FREED\n");
     }
-    if(&(ENGINE->Sphere))
-        printf("LOG::ENGINE.H::CLEANUP::MODEL_FREED\n");
-        FREE_MODEL(&(ENGINE->Sphere));
-    glfwDestroyWindow(ENGINE->WINDOW);
+    // if(&(ENGINE->solar_system))
+    //     printf("LOG::ENGINE.H::CLEANUP::SOLAR_SYSTEM_FREED\n");
+    //     FREE_SOLAR_SYSTEM(&(ENGINE->solar_system));
+    // glfwDestroyWindow(ENGINE->WINDOW);
 }
 
 /*--------------HELPER FUNCTION DEFINITIONS------------------*/

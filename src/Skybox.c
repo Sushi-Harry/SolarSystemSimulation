@@ -1,5 +1,5 @@
-#include "Skybox.h"
-#include "stb_image.h"
+#include "../include/Skybox.h"
+#include "../include/stb_image.h"
 
 void SKYBOX(Skybox* SKYBOX){
     // Initialize the shader

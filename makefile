@@ -13,7 +13,8 @@ SRC = src/main.c \
       src/Shader.c \
       src/ModelLoader.c \
       src/TextureLoader.c \
-      src/Skybox.c
+      src/Skybox.c \
+      src/SolarSystem.c
 
 # Automatically generate object (.o) file names from source files
 OBJ = $(SRC:.c=.o)

@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "engine.h": "c",
-        "cgltf.h": "c"
+        "cgltf.h": "c",
+        "modelloader.h": "c",
+        "skybox.h": "c",
+        "camera.h": "c"
     }
 }

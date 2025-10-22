@@ -1,5 +1,5 @@
-#include "ModelLoader.h"
-#include "Camera.h"
+#include "../include/ModelLoader.h"
+#include "../include/Camera.h"
 #include <cglm/cglm.h>
 
 #define CGLTF_IMPLEMENTATION
@@ -185,7 +185,6 @@ void RENDER_MODEL(Model* MODEL, Camera* CAMERA, mat4* PROJECTION_MATRIX){
     glBindVertexArray(0);
     // printf("LOG::MODELLOADER.H::MODEL_DRAWN_SUCCESSFULLY\n");
 }
-
 void FREE_MODEL(Model* MODEL){
     if(MODEL){
         FREE_SHADER(&(MODEL->SHADER));
