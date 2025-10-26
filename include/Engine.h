@@ -11,6 +11,11 @@
 #include <cglm/cglm.h>
 #include "Camera.h"
 #include "SolarSystem.h"
+#include "GUI.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // A struct to define the basic Engine object type
 typedef struct Engine
@@ -31,7 +36,7 @@ typedef struct Engine
 
     // Skybox
     Skybox spaceSkybox;
-
+    
     // Globally required Data
     mat4 PROJECTION_MATRIX;
     Camera CAMERA;
@@ -47,3 +52,7 @@ mat4* GET_PROJECTION_MATRIX(Engine* ENGINE);
 bool ENGINE_INIT(Engine* ENGINE, int WIDTH, int HEIGHT);
 void ENGINE_RUN(Engine* ENGINE);
 void ENGINE_CLEANUP(Engine* ENGINE);
+
+#ifdef __cplusplus
+}
+#endif

@@ -3,6 +3,11 @@
 #include <stdbool.h>
 #include <cglm/cglm.h>
 
+// ADD THIS WRAPPER AROUND YOUR C FUNCTION DECLARATIONS
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum CAMERA_MOVEMENT {
     CAMERA_MOVEMENT_FORWARD,
     CAMERA_MOVEMENT_BACKWARD,
@@ -34,3 +39,8 @@ void VIEW_MATRIX(Camera* cam, mat4* destViewMat);
 vec3* VIEW_POS(Camera* cam);
 void KEYBOARD_PROCESSING(Camera* cam, CAMERA_MOVEMENT direction, float deltaTime);
 void PROCESS_MOUSE_MOVEMENT(Camera* cam, float xoffset, float yoffset, bool constrainPitch);
+
+// ADD THIS CLOSING BRACE AT THE END
+#ifdef __cplusplus
+}
+#endif

@@ -4,6 +4,9 @@
         "cgltf.h": "c",
         "modelloader.h": "c",
         "skybox.h": "c",
-        "camera.h": "c"
+        "camera.h": "c",
+        "string.h": "c",
+        "gui_cimgui.h": "c",
+        "solarsystem.h": "c"
     }
 }

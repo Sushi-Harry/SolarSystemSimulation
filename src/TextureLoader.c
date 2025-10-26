@@ -109,8 +109,8 @@ void CUBEMAP_TEXTURE(CubemapTexture* texture){
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture->CUBEMAP_TEXTURE_ID);
 
     char PATHS[6][50] = {
-        "skybox/skybox_2/right.png",  
-        "skybox/skybox_2/left.png",   
+        "skybox/skybox_2/left.png",  
+        "skybox/skybox_2/right.png",   
         "skybox/skybox_2/top.png",    
         "skybox/skybox_2/bottom.png", 
         "skybox/skybox_2/back.png",   

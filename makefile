@@ -1,39 +1,96 @@
-# Compiler and flags
+# =============================================================================
+# 1. Configuration - Adjust these variables
+# =============================================================================
+
+# --- Compilers ---
+CXX = g++
 CC = gcc
-# CFLAGS are for compilation. -g adds debug symbols for GDB. -I./include tells the compiler to look for headers in the 'include' folder.
-CFLAGS = -g -I./include -Wall
-# LDFLAGS are for linking.
-LDFLAGS = -lglfw -lGLEW -lGL -lm
 
-# List ALL your SOURCE (.c) files here.
-# IMPORTANT: Use the correct paths to your .c files.
-SRC = src/main.c \
-      src/Engine.c \
-      src/Camera.c \
-      src/Shader.c \
-      src/ModelLoader.c \
-      src/TextureLoader.c \
-      src/Skybox.c \
-      src/SolarSystem.c
+# --- Executable Name ---
+EXECUTABLE = bin/solar_system
 
-# Automatically generate object (.o) file names from source files
-OBJ = $(SRC:.c=.o)
+# --- Directories ---
+SRC_DIR = src
+OBJ_DIR = bin/obj
+IMGUI_DIR = include/imgui
 
-# The name of your final executable
-TARGET = bin/main
+# --- Compiler Flags ---
+# -g: Adds debugging info
+# -Wall -Wextra: Enables most warnings
+CXXFLAGS = -std=c++17 -g -Wall -Wextra
+CFLAGS   = -g -Wall -Wextra
 
-# The default rule: build the target executable
-all: $(TARGET)
+# --- Include Directories ---
+# -I tells the compiler where to look for header files (.h)
+INC_DIRS = -Iinclude -I$(IMGUI_DIR)
 
-# Rule to link the final executable from all the object files
-$(TARGET): $(OBJ)
-	@mkdir -p bin
-	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
+# --- Linker Flags & Libraries ---
+# UPDATED for Linux with GLEW instead of GLAD
+LDFLAGS =
+LIBS    = -lglfw -lGLEW -lGL -lm
 
-# Rule to compile any .c file into a .o file
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# =============================================================================
+# 2. Source File Discovery - This section automatically finds files
+# =============================================================================
 
-# Rule to clean up all compiled files
+# --- Your Project Sources ---
+# Finds all .c and .cpp files in your src directory
+SOURCES_C   = $(wildcard $(SRC_DIR)/*.c)
+SOURCES_CPP = $(wildcard $(SRC_DIR)/*.cpp)
+
+# --- ImGui Library Sources ---
+# We explicitly list the necessary ImGui files to compile
+# This assumes you are using the GLFW and OpenGL3 backend
+IMGUI_SOURCES = $(addprefix $(IMGUI_DIR)/, \
+    imgui.cpp \
+    imgui_draw.cpp \
+    imgui_tables.cpp \
+    imgui_widgets.cpp \
+    backends/imgui_impl_glfw.cpp \
+    backends/imgui_impl_opengl3.cpp)
+
+# --- Object File Generation ---
+# Creates a list of object files (.o) to be placed in the OBJ_DIR
+OBJECTS_C   = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES_C))
+OBJECTS_CPP = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES_CPP))
+OBJECTS_IMGUI = $(patsubst $(IMGUI_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(IMGUI_SOURCES))
+
+# --- All Objects ---
+OBJECTS = $(OBJECTS_C) $(OBJECTS_CPP) $(OBJECTS_IMGUI)
+
+# --- VPATH ---
+# Tells 'make' where to find source files
+VPATH = $(SRC_DIR) $(IMGUI_DIR) $(IMGUI_DIR)/backends
+
+# =============================================================================
+# 3. Build Rules - These are the instructions for building the project
+# =============================================================================
+
+# Default target: build the executable
+all: $(EXECUTABLE)
+
+# Rule to link the final executable
+$(EXECUTABLE): $(OBJECTS)
+	@echo "🔗 Linking executable..."
+	@mkdir -p $(dir $@)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+	@echo "✅ Build finished: $(EXECUTABLE)"
+
+# Rule to compile .cpp and .c files into object files in the OBJ_DIR
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "Compiling C++: $<"
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INC_DIRS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.c
+	@echo "Compiling C:   $<"
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
+
+# Rule to clean up build files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	@echo "🔥 Cleaning up build files..."
+	rm -rf $(OBJ_DIR) $(EXECUTABLE)
+
+# Phony targets are not files
+.PHONY: all clean
