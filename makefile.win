@@ -1,0 +1,84 @@
+
+# CXX for cpp compilation
+CXX = g++
+# CC for C compilation
+CC = gcc
+
+# --- Executable Name ---
+EXECUTABLE = bin/solar_system.exe
+
+# --- Directories ---
+SRC_DIR = src
+OBJ_DIR = bin/obj
+IMGUI_DIR = include/imgui
+INCLUDE_DIR = include/
+
+#--------Lib files----------
+GLFW_LIB_DIR = include/libs/glfw/
+GLEW_LIB_DIR = include/libs/glew/
+
+
+# --- Include Directories ---
+# -I tells the compiler where to look for header files (.h)
+INC_DIRS = -I$(INCLUDE_DIR) -I$(IMGUI_DIR)
+
+#--------linker flags-----------
+CXXFLAGS = -std=c++17 -g -Wall -Wextra $(INC_DIRS)
+CFLAGS   = -g -Wall -Wextra $(INC_DIRS)
+
+#-----------Lib paths---------
+LIB_PATHS = -L$(GLFW_LIB_DIR) -L$(GLEW_LIB_DIR)
+LDFLAGS = $(LIB_PATHS)
+LIBS    = -lglfw3 -lglew32 -lopengl32 -lgdi32 -lm -lstdc++
+
+# Finds all .c and .cpp files in your src directory
+SOURCES_C   = $(wildcard $(SRC_DIR)/*.c)
+SOURCES_CPP = $(wildcard $(SRC_DIR)/*.cpp)
+
+IMGUI_SOURCES = $(addprefix $(IMGUI_DIR)/, \
+    imgui.cpp \
+    imgui_draw.cpp \
+    imgui_tables.cpp \
+    imgui_widgets.cpp \
+    backends/imgui_impl_glfw.cpp \
+    backends/imgui_impl_opengl3.cpp)
+
+# --- Object File Generation ---
+OBJECTS_C   = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES_C))
+OBJECTS_CPP = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SOURCES_CPP))
+OBJECTS_IMGUI = $(patsubst $(IMGUI_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(IMGUI_SOURCES))
+# --- All Objects ---
+OBJECTS = $(OBJECTS_C) $(OBJECTS_CPP) $(OBJECTS_IMGUI)
+
+# --- VPATH ---
+# Tells 'make' where to find source files relative to the obj_dir path
+VPATH = $(SRC_DIR) $(IMGUI_DIR) $(IMGUI_DIR)/backends
+
+# -------Build Rules-------
+all: $(EXECUTABLE)
+
+# Rule to link the final executable
+$(EXECUTABLE): $(OBJECTS)
+	@echo "-------------------     Linking executable...     -------------------"
+	@mkdir -p $(dir $@)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+	@echo "------------------- Build finished: $(EXECUTABLE) -------------------"
+
+# Rule to compile .cpp and .c files into object files in the OBJ_DIR
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "------------------- Compiling Cpp: $<  -------------------"
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INC_DIRS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.c
+	@echo "------------------- Compiling C:   $<  -------------------"
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INC_DIRS) -c $< -o $@
+
+# Rule to clean up build files
+clean:
+	@echo "-------------------  🔥 Cleaning up build files...  -------------------"
+	rm -rf $(OBJ_DIR) $(EXECUTABLE)
+
+# Phony targets are not files
+.PHONY: all clean

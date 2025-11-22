@@ -121,14 +121,6 @@ void CUBEMAP_TEXTURE(CubemapTexture* texture){
         int WIDTH, HEIGHT, NR_CHANNELS;
         unsigned char* data = stbi_load(PATHS[i], &WIDTH, &HEIGHT, &NR_CHANNELS, 0 );
         if(data){
-
-            // THe following code was suggested by Gemini. This is a rather simple fix that I actually missed out on while writing this function for the very first time
-            // Very amateur mistake but oh well..
-            // This part of the code actually handles different image formats
-            // 1 channel means that the image probably only has the red channel.
-            // jpg uses 3 channels: r,g,b
-            // But the skyboxes I'm using are made of 6 png files and png has 4 channels. It has an extra alpha channel that jpg lacks
-            // Initially I was using a hardcoded GL_RGB format in the glTexImage2D format which led to a rather nice looking visual glitch. Very similar to an interference pattern formed using white light
             GLenum format;
             if (NR_CHANNELS == 1)
                 format = GL_RED;

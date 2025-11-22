@@ -1,10 +1,10 @@
 #pragma once
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include "Camera.h"
 #include "Shader.h"
 #include "TextureLoader.h"
-#include <cgltf/cgltf.h>
+#include "cgltf/cgltf.h"
 
 typedef struct Material{
     Texture diffuse;

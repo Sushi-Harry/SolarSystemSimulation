@@ -13,6 +13,12 @@ static void framebuffer_size_callback(GLFWwindow* WINDOW, int WIDTH, int HEIGHT)
 static void mouse_callback(GLFWwindow* WINDOW, double xPos, double yPos);
 
 bool ENGINE_INIT(Engine* ENGINE, int WIDTH, int HEIGHT){
+
+    /*------------------MISC DATA FOR LATER USE---------------------*/
+    ENGINE->CURSOR_HIDDEN = true;
+    ENGINE->TAB_WAS_PRESSED = false;
+    /*--------------------------------------------------------------*/
+
     if(!glfwInit()){
         printf("ERROR::GLFW_INITIALIZATION_FAILED\n");
         return false;
@@ -60,6 +66,7 @@ bool ENGINE_INIT(Engine* ENGINE, int WIDTH, int HEIGHT){
 
     glfwSetFramebufferSizeCallback(ENGINE->WINDOW, framebuffer_size_callback);
     glfwSetCursorPosCallback(ENGINE->WINDOW, mouse_callback);
+    glfwSetInputMode(ENGINE->WINDOW, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     /* ---- Delta time calculations: Setup------*/
     ENGINE->deltaTime = 0.0;
@@ -91,10 +98,7 @@ void ENGINE_RUN(Engine* ENGINE){
 
         /*-----------------INITIALIZING THE SYSTEM----------------------*/
         UPDATE_SOLAR_SYSTEM(&(ENGINE->solar_system), ENGINE->deltaTime);
-
-        /*----------INPUT------------*/
-        processInput(ENGINE);
-
+        
         /*-------------------Clearing the buffer-------------------------*/
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -104,11 +108,13 @@ void ENGINE_RUN(Engine* ENGINE){
         RENDER_SKYBOX(&(ENGINE->spaceSkybox), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
         RENDER_SOLAR_SYSTEM(&(ENGINE->solar_system), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
         // RENDER_MODEL(&(ENGINE->sphere_model), &(ENGINE->CAMERA), GET_PROJECTION_MATRIX(ENGINE));
+        /*--------------------GUI-RENDER--------------------------------*/
+        GUI_RENDER(&ENGINE->solar_system);
+        /*------------------------------GUI_END-------------------------*/
         /*---------This is the end of the current frame--------------*/
         
-        /*--------------------GUI-RENDER--------------------------------*/
-        GUI_RENDER();
-        /*------------------------------GUI_END-------------------------*/
+        /*----------INPUT------------*/
+        processInput(ENGINE);
 
         glfwSwapBuffers(ENGINE->WINDOW);
         glfwPollEvents();
@@ -133,6 +139,9 @@ mat4* GET_PROJECTION_MATRIX(Engine* ENGINE){
 
 static void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+
     // Retrieve the pointer to your Engine struct (which contains the camera)
     // You must set this with glfwSetWindowUserPointer(window, &myEngine); in main()
     Engine* ENGINE = (Engine*)glfwGetWindowUserPointer(window);
@@ -140,24 +149,31 @@ static void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         return;
     }
 
-    // This check prevents a large camera jump on the first mouse input
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureMouse){
+        return;
     }
 
-    // Calculate the mouse's movement since the last frame
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
-
-    // Update the last positions for the next frame
-    lastX = xpos;
-    lastY = ypos;
-
-    // Use your existing function to process the movement
-    PROCESS_MOUSE_MOVEMENT(&(ENGINE->CAMERA), xoffset, yoffset, true);
+    if(ENGINE && ENGINE->CURSOR_HIDDEN){
+        // This check prevents a large camera jump on the first mouse input
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+    
+        // Calculate the mouse's movement since the last frame
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to top
+    
+        // Update the last positions for the next frame
+        lastX = xpos;
+        lastY = ypos;
+    
+        // Use your existing function to process the movement
+        PROCESS_MOUSE_MOVEMENT(&(ENGINE->CAMERA), xoffset, yoffset, true);
+    }
 }
 
 static void framebuffer_size_callback(GLFWwindow* WINDOW, int WIDTH, int HEIGHT) {
@@ -168,10 +184,26 @@ static void framebuffer_size_callback(GLFWwindow* WINDOW, int WIDTH, int HEIGHT)
     glm_perspective(glm_rad(90.0), (float)WIDTH / (float)HEIGHT, 0.1, 1000.0, engine->PROJECTION_MATRIX);
 }
 
-// In processInput() in engine.c
 static void processInput(Engine* ENGINE){
     if(glfwGetKey(ENGINE->WINDOW, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(ENGINE->WINDOW, true);
+
+    /* For Mouse Cursor Toggle */
+    bool tabPressed = glfwGetKey(ENGINE->WINDOW, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS;
+    if(tabPressed && !ENGINE->TAB_WAS_PRESSED){
+        if(ENGINE->CURSOR_HIDDEN){
+            glfwSetInputMode(ENGINE->WINDOW, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }else{
+            glfwSetInputMode(ENGINE->WINDOW, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        ENGINE->CURSOR_HIDDEN = !ENGINE->CURSOR_HIDDEN;
+    }
+    ENGINE->TAB_WAS_PRESSED = !tabPressed;
+    
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureKeyboard){
+        return;
+    }
 
     if (glfwGetKey(ENGINE->WINDOW, GLFW_KEY_W) == GLFW_PRESS){
         KEYBOARD_PROCESSING(&(ENGINE->CAMERA), CAMERA_MOVEMENT_FORWARD, ENGINE->deltaTime);

@@ -1,6 +1,6 @@
 #pragma once
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 
 #include "ModelLoader.h"
 #include "Skybox.h"
@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 #include "Camera.h"
 #include "SolarSystem.h"
 #include "GUI.h"
@@ -40,6 +40,10 @@ typedef struct Engine
     // Globally required Data
     mat4 PROJECTION_MATRIX;
     Camera CAMERA;
+
+    // Misc Data
+    bool CURSOR_HIDDEN;
+    bool TAB_WAS_PRESSED;
 
 } Engine;
 

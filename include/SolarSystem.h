@@ -127,6 +127,8 @@ void UPDATE_STAR(Star* star);
 void UPDATE_PLANET(Planet* planet, float delta_time);
 void UPDATE_MOON(Moon* moon, float deltaTime);
 void UPDATE_SOLAR_SYSTEM(SolarSystem* solar_system, float delta_time);
+void CALCULATE_PLANET_ORBITAL_DATA(Planet* planet);
+void CALCULATE_MOON_ORBITAL_DATA(Moon* moon);
 
 void RENDER_MOON(Moon* moon, Camera* camera, mat4* projection_matrix);
 void RENDER_PLANET(Planet* planet, Camera* camera, mat4* projection_matrix);

@@ -1,9 +1,9 @@
 #include "../include/ModelLoader.h"
 #include "../include/Camera.h"
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 
 #define CGLTF_IMPLEMENTATION
-#include <cgltf/cgltf.h>
+#include "cgltf/cgltf.h"
 
 typedef struct Vertex
 {

@@ -1,7 +1,7 @@
 #pragma once
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include <stdbool.h>
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 
 // ADD THIS WRAPPER AROUND YOUR C FUNCTION DECLARATIONS
 #ifdef __cplusplus

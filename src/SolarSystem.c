@@ -1,6 +1,6 @@
 #include "../include/SolarSystem.h"
 #include "math.h"
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 
 void STAR_INIT(Star* star, vec3 star_position, float star_radius, float star_mass, const char* diffuse_texture, const char* specular_texture, const char* star_name, const char* sphere_model_path){
     // Copy the position attrib
@@ -65,6 +65,12 @@ void PLANET_INIT(Planet* planet, Star* parent_star, float planet_radius, float p
     TEXTURE_PREDEFINED_PATH(&(planet->SPECULAR), planet->SPECULAR_PATH);
 }
 
+void CALCULATE_PLANET_ORBITAL_DATA(Planet* planet){
+    glm_vec3_copy((vec3){planet->RADIUS, planet->RADIUS, planet->RADIUS}, planet->SCALE);
+    float grav_const = 0.6; // I know this is the wrong value according to real world physics but just let it be
+    planet->ORBITAL_SPEED = sqrtf((grav_const * planet->MASS)/planet->ORBITAL_RADIUS);
+}
+
 void MOON_INIT(Moon* moon, Planet* parent_planet, float moon_radius, float moon_mass, float orbital_radius, const char* diffuse_texture, const char* specular_texture, const char* moon_name, const char* sphere_model_path){
      // Specify the parent star
     moon->PARENT_PLANET = parent_planet;
@@ -92,6 +98,12 @@ void MOON_INIT(Moon* moon, Planet* parent_planet, float moon_radius, float moon_
     //initialize the textures
     TEXTURE_PREDEFINED_PATH(&(moon->DIFFUSE), moon->DIFFUSE_PATH);
     TEXTURE_PREDEFINED_PATH(&(moon->SPECULAR), moon->SPECULAR_PATH);
+}
+
+void CALCULATE_MOON_ORBITAL_DATA(Moon* moon){
+    glm_vec3_copy((vec3){moon->RADIUS, moon->RADIUS, moon->RADIUS}, moon->SCALE);
+    float grav_const = 0.6; // I know this is the wrong value according to real world physics but just let it be
+    moon->ORBITAL_SPEED = sqrtf((grav_const * moon->PARENT_PLANET->MASS)/moon->ORBITAL_RADIUS);
 }
 
 void SOLAR_SYSTEM_INIT(SolarSystem* solar_system){

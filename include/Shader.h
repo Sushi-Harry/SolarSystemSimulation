@@ -1,9 +1,9 @@
 #pragma once
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 #include <string.h>
 #include <stdlib.h>
 
