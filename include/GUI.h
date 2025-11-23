@@ -10,7 +10,8 @@ typedef enum {
     _ADD_MOON,
     _ADD_PLANET,
     EDIT_PLANET_DATA,
-    EDIT_MOON_DATA
+    EDIT_MOON_DATA,
+    DISPLAY_DATA_MODE
 } GUI_STATE;
 
 /*
@@ -29,4 +30,5 @@ void ADD_PLANET(SolarSystem *SOLAR_SYSTEM);
 void ADD_MOON(SolarSystem* SOLAR_SYSTEM);
 void EDIT_PLANET(SolarSystem *SOLAR_SYSTEM);
 void EDIT_MOON(SolarSystem *SOLAR_SYSTEM);
+void DISPLAY_DATA(SolarSystem *SOLAR_SYSTEM);
 void GUI_RENDER(SolarSystem* SOLAR_SYSTEM);

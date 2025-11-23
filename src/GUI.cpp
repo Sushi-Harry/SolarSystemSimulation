@@ -8,7 +8,7 @@ float mass = 0.0f;
 float orbitalRadius = 0.0f;
 int parent_index = 0;
 int moon_edit_index = 0, planet_edit_index = 0;
-GUI_STATE gui_state = _ADD_PLANET;
+GUI_STATE gui_state = DISPLAY_DATA_MODE;
 
 void GUI_INIT(GLFWwindow* WINDOW){
     IMGUI_CHECKVERSION();
@@ -29,6 +29,7 @@ void ADD_PLANET(SolarSystem* SOLAR_SYSTEM){
         if(name != "" && specularPath != "" && diffusePath != "" && radius != 0.0f && mass != 0.0f && orbitalRadius != 0.0f){
             PLANET_INIT(&SOLAR_SYSTEM->PLANETS[SOLAR_SYSTEM->PLANET_COUNT], &SOLAR_SYSTEM->CENTRAL_STAR, radius, mass, orbitalRadius, diffusePath, specularPath, name, "models/sphere/sphere.gltf");
             SOLAR_SYSTEM->PLANET_COUNT++;
+            gui_state = DISPLAY_DATA_MODE;
         }
     }
 }
@@ -45,7 +46,7 @@ void ADD_MOON(SolarSystem* SOLAR_SYSTEM){
         if(name != "" && specularPath != "" && diffusePath != "" && radius != 0.0f && mass != 0.0f && orbitalRadius != 0.0f){
             MOON_INIT(&SOLAR_SYSTEM->MOONS[SOLAR_SYSTEM->MOON_COUNT], &SOLAR_SYSTEM->PLANETS[parent_index], radius, mass, orbitalRadius, diffusePath, specularPath, name, "models/sphere/sphere.gltf");
             SOLAR_SYSTEM->MOON_COUNT++;
-            gui_state = _ADD_PLANET;
+            gui_state = DISPLAY_DATA_MODE;
         }
     }
 }
@@ -59,7 +60,7 @@ void EDIT_PLANET(SolarSystem *SOLAR_SYSTEM){
     
         if(ImGui::Button("Update Data")){
             CALCULATE_PLANET_ORBITAL_DATA(&SOLAR_SYSTEM->PLANETS[planet_edit_index]);
-            gui_state = _ADD_PLANET;
+            gui_state = DISPLAY_DATA_MODE;
         }
     }else{
         ImGui::Text("There Are No Planets to Edit.");
@@ -76,10 +77,31 @@ void EDIT_MOON(SolarSystem *SOLAR_SYSTEM){
     
         if(ImGui::Button("Update Data")){
             CALCULATE_MOON_ORBITAL_DATA(&SOLAR_SYSTEM->MOONS[moon_edit_index]);
-            gui_state = _ADD_PLANET;
+            gui_state = DISPLAY_DATA_MODE;
         }
     }else{
         ImGui::Text("There Are No Moons to Edit.");
+    }
+}
+
+void DISPLAY_DATA(SolarSystem *SOLAR_SYSTEM){
+    /*--------------PLANET DATA DISPLAY---------------------*/
+    ImGui::TextColored((ImVec4){0.0, 1.0, 1.0, 1.0}, "\nPLANETS:\n");
+    for(int i = 0; i < SOLAR_SYSTEM->PLANET_COUNT; i++){
+        ImGui::Text("Name of Planet %d = %s", i+1, SOLAR_SYSTEM->PLANETS[i].NAME);
+        ImGui::Text("Radius of %s = %.3f", SOLAR_SYSTEM->PLANETS[i].NAME, SOLAR_SYSTEM->PLANETS[i].RADIUS);
+        ImGui::Text("Rotation Speed (Angular) of %s = %.3f", SOLAR_SYSTEM->PLANETS[i].NAME, SOLAR_SYSTEM->PLANETS[i].ROTATION_SPEED);
+        ImGui::Text("Orbital Speed (Angular) of %s = %.3f", SOLAR_SYSTEM->PLANETS[i].NAME, SOLAR_SYSTEM->PLANETS[i].ORBITAL_SPEED);
+        ImGui::Text("\n");
+    }
+    ImGui::TextColored((ImVec4){0.0, 1.0, 1.0, 1.0}, "\n\nMOONS:\n");
+    for(int i = 0; i < SOLAR_SYSTEM->MOON_COUNT; i++){
+        ImGui::Text("Name of Parent Planet = %s", SOLAR_SYSTEM->MOONS[i].PARENT_PLANET->NAME);
+        ImGui::Text("Name of Moon %d = %s", i+1, SOLAR_SYSTEM->MOONS[i].NAME);
+        ImGui::Text("Radius of %s = %.3f", SOLAR_SYSTEM->MOONS[i].NAME, SOLAR_SYSTEM->MOONS[i].RADIUS);
+        ImGui::Text("Rotation Speed (Angular) of %s = %.3f", SOLAR_SYSTEM->MOONS[i].NAME, SOLAR_SYSTEM->MOONS[i].ROTATION_SPEED);
+        ImGui::Text("Orbital Speed (Angular) of %s = %.3f", SOLAR_SYSTEM->MOONS[i].NAME, SOLAR_SYSTEM->MOONS[i].ORBITAL_SPEED);
+        ImGui::Text("\n");
     }
 }
 
@@ -95,9 +117,10 @@ void GUI_RENDER(SolarSystem* SOLAR_SYSTEM){
         "_ADD_MOON",
         "_ADD_PLANET",
         "EDIT_PLANET_DATA",
-        "EDIT_MOON_DATA"
+        "EDIT_MOON_DATA",
+        "DISPLAY_DATA_MODE"
     };
-    static GUI_STATE currentState = _ADD_PLANET;
+    static GUI_STATE currentState = DISPLAY_DATA_MODE;
     if(ImGui::Combo("MODE", (int*)&currentState, enumNames, IM_ARRAYSIZE(enumNames))){
         gui_state = currentState;
     }
@@ -116,7 +139,7 @@ void GUI_RENDER(SolarSystem* SOLAR_SYSTEM){
             EDIT_MOON(SOLAR_SYSTEM);
             break;
         default:
-            ADD_PLANET(SOLAR_SYSTEM);
+            DISPLAY_DATA(SOLAR_SYSTEM);
         break;
     }
     ImGui::End();
