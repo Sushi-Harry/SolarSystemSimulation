@@ -156,7 +156,6 @@ void RENDER_MODEL(Model* MODEL, Camera* CAMERA, mat4* PROJECTION_MATRIX){
     glBindTexture(GL_TEXTURE_2D, MODEL->MATERIAL.specular.TEXTURE_OBJECT);
     SET_INT(&(MODEL->SHADER), "texture_specular1", 1);
 
-    // USING A 4x4 IDENTITY MATRIX FOR TESTING PURPOSES. WILL ADD DIFFERENT LOGIC FOR MODEL MATRIX WHEN WORKING ON PLANETARY MOTION
     mat4 model;
     glm_mat4_identity(model);
     glm_scale(model, (vec3){0.1f, 0.1f, 0.1f});
